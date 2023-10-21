@@ -1,0 +1,8 @@
+type: edu
+files:
+  - name: src/fileshare/Application.java
+    visible: true
+  - name: test/FileShareTest.java
+    visible: false
+  - name: build.gradle
+    visible: true
