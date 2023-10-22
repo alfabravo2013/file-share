@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Comparator;
 
 import static org.hyperskill.hstest.testing.expect.Expectation.expect;
@@ -22,51 +21,32 @@ public class FileShareTest extends SpringTest {
 
     CheckResult emptyStorageAndCheckInfo() {
         clearStorage();
+
         var response = get(infoUrl).send();
-        if (response.getStatusCode() != 200) {
-            return CheckResult.wrong("""
-                    GET %s should respond with status code 200, responded with %d
-                                        
-                    Response body:
-                    %s
-                    """.formatted(infoUrl, response.getStatusCode(), response.getContent()));
-        }
 
-        try {
-            response.getJson();
-        } catch (Exception e) {
-            return CheckResult.wrong("GET %s should return a valid JSON".formatted(infoUrl));
-        }
-
-        expect(response.getContent()).asJson().check(isObject()
-                .value("total_files", 0)
-                .value("total_bytes", 0)
+        checkStatusCode(
+                response.getRequest().getMethod(),
+                response.getRequest().getEndpoint(),
+                response.getStatusCode(),
+                200
         );
+
+        checkJson(response, 0, 0);
 
         return CheckResult.correct();
     }
 
-    CheckResult testInfo(int count, long size) {
+    CheckResult testInfo(int count, int size) {
         var response = get(infoUrl).send();
-        if (response.getStatusCode() != 200) {
-            return CheckResult.wrong("""
-                    GET %s should respond with status code 200, responded with %d
-                                        
-                    Response body:
-                    %s
-                    """.formatted(infoUrl, response.getStatusCode(), response.getContent()));
-        }
 
-        try {
-            response.getJson();
-        } catch (Exception e) {
-            return CheckResult.wrong("GET %s should return a valid JSON".formatted(infoUrl));
-        }
-
-        expect(response.getContent()).asJson().check(isObject()
-                .value("total_files", count)
-                .value("total_bytes", size)
+        checkStatusCode(
+                response.getRequest().getMethod(),
+                response.getRequest().getEndpoint(),
+                response.getStatusCode(),
+                200
         );
+
+        checkJson(response, count, size);
 
         return CheckResult.correct();
     }
@@ -77,12 +57,14 @@ public class FileShareTest extends SpringTest {
 
             FileData fileData = FileData.withNewName(filepath, filename);
 
-            HttpResponse<byte[]> postResponse = client.post(uploadUrl, fileData);
+            HttpResponse<byte[]> response = client.post(uploadUrl, fileData);
 
-            if (postResponse.statusCode() != 201) {
-                return CheckResult.wrong(
-                        "Expected status code %d but was %d".formatted(201, postResponse.statusCode()));
-            }
+            checkStatusCode(
+                    response.request().method(),
+                    response.request().uri().toString(),
+                    response.statusCode(),
+                    201
+            );
 
             return CheckResult.correct();
         } catch (IOException | InterruptedException e) {
@@ -97,12 +79,36 @@ public class FileShareTest extends SpringTest {
             () -> testPostAndGetFile("./test/files/file2.jpg", "file 1.jpg"),
             () -> testPostAndGetFile("./test/files/hello", "file2.exe"),
             () -> testInfo(2, 47086),
+            this::emptyStorageAndCheckInfo,
     };
+
+    private void checkStatusCode(String method, String endpoint, int actual, int expected) {
+        if (actual != expected) {
+            throw new WrongAnswer("""
+                    %s %s should respond with status code %d, responded with %d
+                    \r
+                    """.formatted(method, endpoint, expected, actual));
+        }
+    }
+
+    private void checkJson(org.hyperskill.hstest.mocks.web.response.HttpResponse response,
+                           int expectedCount,
+                           int expectedSize) {
+        try {
+            response.getJson();
+        } catch (Exception e) {
+            throw new WrongAnswer("GET %s should return a valid JSON".formatted(infoUrl));
+        }
+
+        expect(response.getContent()).asJson().check(isObject()
+                .value("total_files", expectedCount)
+                .value("total_bytes", expectedSize)
+        );
+    }
 
     private void clearStorage() {
         try (var stream = Files.walk(storagePath)) {
-            stream
-                    .sorted(Comparator.reverseOrder())
+            stream.sorted(Comparator.reverseOrder())
                     .filter(path -> !path.equals(storagePath))
                     .forEach(path -> {
                         try {
