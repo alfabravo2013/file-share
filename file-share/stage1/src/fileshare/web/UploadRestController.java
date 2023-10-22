@@ -1,5 +1,7 @@
 package fileshare.web;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +19,44 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping(path = "/api/v1")
 public class UploadRestController {
-    private final String baseDir = "uploads";
-    private final String baseUrl = "http://localhost:8888/api/v1/";
+
+    @Value("${uploads.dir}")
+    private String baseDir;
+    private final String baseUrl = "http://localhost:8888/api/v1";
+
+    @GetMapping(path = "/info")
+    public ResponseEntity<InfoResponse> info() {
+        var count = new AtomicInteger(0);
+        var size = new AtomicLong(0);
+        try (var stream = Files.walk(Path.of(baseDir))) {
+            stream.filter(path -> !path.toFile().isDirectory())
+                    .forEach(path -> {
+                        try {
+                            count.addAndGet(1);
+                            size.addAndGet(Files.size(path));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            throw new RuntimeException(e);
+                        }
+                    });
+            return ResponseEntity.ok().body(new InfoResponse(count.get(), size.get()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                    .internalServerError()
+                    .build();
+        }
+    }
 
     @PostMapping(path = "/upload")
     public ResponseEntity<?> upload(@RequestParam(name = "file") MultipartFile file) {
@@ -34,7 +65,7 @@ public class UploadRestController {
             Path destination = Path.of(baseDir, filename);
             file.transferTo(destination);
             return ResponseEntity
-                    .created(URI.create(baseUrl + "download/" + URLEncoder.encode(filename, StandardCharsets.UTF_8)))
+                    .created(URI.create(baseUrl + "/download/" + URLEncoder.encode(filename, StandardCharsets.UTF_8)))
                     .build();
         } catch (FileNotFoundException e) {
             return ResponseEntity
@@ -42,6 +73,7 @@ public class UploadRestController {
                     .build();
         } catch (IOException e) {
             var message = "Error saving file: " + e.getClass().getSimpleName() + "; " + e.getMessage();
+            System.out.println(message);
             return ResponseEntity
                     .badRequest()
                     .body(Map.of("error", message));
@@ -55,5 +87,17 @@ public class UploadRestController {
         return ResponseEntity
                 .ok()
                 .body(resource);
+    }
+
+    @PostConstruct
+    public void init() {
+        Path path = Path.of(baseDir);
+        if (!path.toFile().exists()) {
+            try {
+                Files.createDirectory(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
