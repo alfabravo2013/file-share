@@ -6,3 +6,17 @@ files:
     visible: false
   - name: build.gradle
     visible: true
+  - name: test/FileClient.java
+    visible: false
+  - name: test/file 1.jpg
+    visible: false
+  - name: test/FileData.java
+    visible: false
+  - name: test/file2.jpg
+    visible: false
+  - name: src/fileshare/web/UploadRestController.java
+    visible: true
+  - name: uploads/file 1.jpg
+    visible: true
+  - name: src/resources/application.properties
+    visible: true
