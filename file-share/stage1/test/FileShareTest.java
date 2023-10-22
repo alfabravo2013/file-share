@@ -79,6 +79,8 @@ public class FileShareTest extends SpringTest {
             () -> testPostAndGetFile("./test/files/file2.jpg", "file 1.jpg"),
             () -> testPostAndGetFile("./test/files/hello", "file2.exe"),
             () -> testInfo(2, 47086),
+            this::reloadServer,
+            () -> testInfo(2, 47086),
             this::emptyStorageAndCheckInfo,
     };
 
@@ -120,5 +122,14 @@ public class FileShareTest extends SpringTest {
         } catch (Exception ex) {
             throw new UnexpectedError(ex.getMessage());
         }
+    }
+
+    private CheckResult reloadServer() {
+        try {
+            reloadSpring();
+        } catch (Exception ex) {
+            throw new UnexpectedError(ex.getMessage());
+        }
+        return CheckResult.correct();
     }
 }
