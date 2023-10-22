@@ -9,13 +9,16 @@ import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.UUID;
 
 import static org.hyperskill.hstest.testing.expect.Expectation.expect;
 import static org.hyperskill.hstest.testing.expect.json.JsonChecker.isObject;
 
 public class FileShareTest extends SpringTest {
     private final String uploadUrl = "http://localhost:" + this.port + "/api/v1/upload";
+    private final String downloadUrl = "http://localhost:" + this.port + "/api/v1/download";
     private final String infoUrl = "/api/v1/info";
     private final Path storagePath = Path.of("../uploads");
 
@@ -51,20 +54,54 @@ public class FileShareTest extends SpringTest {
         return CheckResult.correct();
     }
 
-    CheckResult testPostFile(String filepath, String filename) {
+    CheckResult testNotFound() {
+        try {
+            FileClient client = new FileClient();
+            var location = downloadUrl + "/" + UUID.randomUUID();
+            HttpResponse<byte[]> response = client.get(location);
+            checkStatusCode(
+                    response.request().method(),
+                    response.request().uri().toString(),
+                    response.statusCode(),
+                    404
+            );
+            return CheckResult.correct();
+        } catch (IOException | InterruptedException e) {
+            return CheckResult.wrong("Error occurred during the test execution: " + e.getMessage());
+        }
+    }
+
+    CheckResult testPostAndGetFile(String filepath, String filename) {
         try {
             FileClient client = new FileClient();
 
             FileData fileData = FileData.withNewName(filepath, filename);
 
-            HttpResponse<byte[]> response = client.post(uploadUrl, fileData);
+            HttpResponse<byte[]> postResponse = client.post(uploadUrl, fileData);
 
             checkStatusCode(
-                    response.request().method(),
-                    response.request().uri().toString(),
-                    response.statusCode(),
+                    postResponse.request().method(),
+                    postResponse.request().uri().toString(),
+                    postResponse.statusCode(),
                     201
             );
+
+            String location = postResponse.headers()
+                    .firstValue("Location")
+                    .orElseThrow(() -> new WrongAnswer("Response should contain the 'Location' header."));
+
+            if (location.isBlank()) {
+                return CheckResult.wrong("The value of the 'Location' header should not be blank");
+            }
+
+            HttpResponse<byte[]> getResponse = client.get(location);
+
+            if (!Arrays.equals(fileData.getContents(), getResponse.body())) {
+                return CheckResult.wrong("""
+                        GET %s
+                        returned a request body that does not match the expected file content
+                        """.formatted(location));
+            }
 
             return CheckResult.correct();
         } catch (IOException | InterruptedException e) {
@@ -75,9 +112,10 @@ public class FileShareTest extends SpringTest {
     @DynamicTest
     DynamicTesting[] dt = {
             this::emptyStorageAndCheckInfo,
-            () -> testPostFile("./test/files/file 1.jpg", "file 1.jpg"),
-            () -> testPostFile("./test/files/file2.jpg", "file 1.jpg"),
-            () -> testPostFile("./test/files/hello", "file2.exe"),
+            () -> testPostAndGetFile("./test/files/file 1.jpg", "file 1.jpg"),
+            () -> testPostAndGetFile("./test/files/file2.jpg", "file 1.jpg"),
+            () -> testPostAndGetFile("./test/files/hello", "file2.exe"),
+            this::testNotFound,
             () -> testInfo(2, 47086),
             this::reloadServer,
             () -> testInfo(2, 47086),

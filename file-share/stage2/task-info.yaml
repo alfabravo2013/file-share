@@ -1,0 +1,24 @@
+type: edu
+files:
+  - name: src/fileshare/Application.java
+    visible: true
+  - name: build.gradle
+    visible: true
+  - name: src/fileshare/web/UploadRestController.java
+    visible: true
+  - name: src/resources/application.properties
+    visible: true
+  - name: src/fileshare/web/InfoResponse.java
+    visible: true
+  - name: test/files/hello
+    visible: false
+  - name: test/files/file2.jpg
+    visible: false
+  - name: test/files/file 1.jpg
+    visible: false
+  - name: test/FileClient.java
+    visible: false
+  - name: test/FileData.java
+    visible: false
+  - name: test/FileShareTest.java
+    visible: false
