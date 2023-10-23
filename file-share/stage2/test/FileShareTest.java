@@ -75,7 +75,7 @@ public class FileShareTest extends SpringTest {
         try {
             FileClient client = new FileClient();
 
-            FileData fileData = FileData.withNewName(filepath, filename);
+            FileData fileData = FileData.of(filepath).setOriginalName(filename);
 
             HttpResponse<byte[]> postResponse = client.post(uploadUrl, fileData);
 

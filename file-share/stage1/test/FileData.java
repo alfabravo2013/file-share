@@ -16,19 +16,14 @@ class FileData {
         return new FileData()
                 .setOriginalName(path.getFileName().toString())
                 .setContents(bytes)
-                .setMimeType(mime);
-    }
-
-    public static FileData withNewName(String pathString, String filename) throws IOException {
-        FileData fileData = of(pathString);
-        return fileData.setOriginalName(filename);
+                .setMimeType(mime == null ? "application/octet-stream" : mime);
     }
 
     public String getOriginalName() {
         return originalName;
     }
 
-    private FileData setOriginalName(String originalName) {
+    public FileData setOriginalName(String originalName) {
         this.originalName = originalName;
         return this;
     }
@@ -46,7 +41,7 @@ class FileData {
         return mimeType;
     }
 
-    private FileData setMimeType(String mimeType) {
+    public FileData setMimeType(String mimeType) {
         this.mimeType = mimeType;
         return this;
     }
