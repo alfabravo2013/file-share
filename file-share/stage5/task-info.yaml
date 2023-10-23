@@ -1,0 +1,50 @@
+type: edu
+files:
+  - name: src/fileshare/Application.java
+    visible: true
+  - name: build.gradle
+    visible: true
+  - name: src/fileshare/web/UploadRestController.java
+    visible: true
+  - name: src/resources/application.properties
+    visible: true
+  - name: src/fileshare/web/InfoResponse.java
+    visible: true
+  - name: src/fileshare/service/FileService.java
+    visible: true
+  - name: src/fileshare/repository/FileInfo.java
+    visible: true
+  - name: src/fileshare/repository/FileInfoRepository.java
+    visible: true
+  - name: src/fileshare/service/FileContainer.java
+    visible: true
+  - name: src/fileshare/service/MediaTypeValidator.java
+    visible: true
+  - name: src/fileshare/service/exception/PayloadTooLargeException.java
+    visible: true
+  - name: src/fileshare/service/exception/UnsupportedMediaTypeException.java
+    visible: true
+  - name: test/files/hello
+    visible: false
+  - name: test/files/file2.jpg
+    visible: false
+  - name: test/files/file3.txt
+    visible: false
+  - name: test/files/file4.png
+    visible: false
+  - name: test/files/file5.jpg
+    visible: false
+  - name: test/files/file6.jpg
+    visible: false
+  - name: test/files/file 1.jpg
+    visible: false
+  - name: test/files/bigfile.png
+    visible: false
+  - name: test/FileShareTest.java
+    visible: false
+  - name: test/FileData.java
+    visible: false
+  - name: test/FileClient.java
+    visible: false
+  - name: src/fileshare/service/Md5HashProvider.java
+    visible: true
