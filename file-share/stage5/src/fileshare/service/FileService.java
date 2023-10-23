@@ -42,7 +42,6 @@ public class FileService {
 
             var existingFileInfo = repository.findFirstByHash(md5Hash).orElse(null);
 
-
             var fileInfo = new FileInfo();
             fileInfo.setOriginalName(originalFilename);
             fileInfo.setMediaType(mediaType);

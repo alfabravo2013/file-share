@@ -200,6 +200,7 @@ public class FileShareTest extends SpringTest {
             this::reloadServer,
             () -> testInfo(5, 161542),
             () -> testPayloadTooLarge("./test/files/file6.jpg", "file.jpg"),
+            () -> testInfo(5, 161542),
     };
 
     private void checkStatusCode(String method, String endpoint, int actual, int expected) {
