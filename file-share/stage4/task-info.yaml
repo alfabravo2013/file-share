@@ -28,8 +28,6 @@ files:
     visible: false
   - name: test/FileClient.java
     visible: false
-  - name: test/files/file3.txt
-    visible: false
   - name: test/files/bigfile.png
     visible: false
   - name: test/files/file4.png
@@ -40,3 +38,5 @@ files:
     visible: true
   - name: src/fileshare/service/exception/UnsupportedMediaTypeException.java
     visible: true
+  - name: test/files/file3.txt
+    visible: false

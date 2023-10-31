@@ -26,8 +26,6 @@ files:
     visible: true
   - name: test/files/file2.jpg
     visible: false
-  - name: test/files/file3.txt
-    visible: false
   - name: test/files/file4.png
     visible: false
   - name: test/files/file5.jpg
@@ -46,3 +44,5 @@ files:
     visible: false
   - name: src/fileshare/service/Md5HashProvider.java
     visible: true
+  - name: test/files/file3.txt
+    visible: false

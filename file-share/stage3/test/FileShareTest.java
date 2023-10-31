@@ -142,9 +142,9 @@ public class FileShareTest extends SpringTest {
             () -> testPostAndGetFile("./test/files/file2.jpg", "file 1.jpg"),
             () -> testPostAndGetFile("./test/files/file3.txt", "file3.txt"),
             this::testNotFound,
-            () -> testInfo(4, 110463),
+            () -> testInfo(4, 110462),
             this::reloadServer,
-            () -> testInfo(4, 110463),
+            () -> testInfo(4, 110462),
     };
 
     private void checkStatusCode(String method, String endpoint, int actual, int expected) {

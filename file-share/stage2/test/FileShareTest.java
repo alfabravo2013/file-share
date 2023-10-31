@@ -128,9 +128,9 @@ public class FileShareTest extends SpringTest {
             () -> testPostAndGetFile("./test/files/file2.jpg", "file 1.jpg"),
             () -> testPostAndGetFile("./test/files/file3.txt", "file3.txt"),
             this::testNotFound,
-            () -> testInfo(2, 32993),
+            () -> testInfo(2, 32992),
             this::reloadServer,
-            () -> testInfo(2, 32993),
+            () -> testInfo(2, 32992),
             this::emptyStorageAndCheckInfo,
     };
 

@@ -191,14 +191,14 @@ public class FileShareTest extends SpringTest {
             () -> testPostAndGetFile("./test/files/file3.txt", "file.txt"),
             () -> testPostAndGetFile("./test/files/file4.png", "file.png"),
             () -> testPostAndGetFile("./test/files/file5.jpg", "file33.jpg"),
-            () -> testInfo(5, 161542),
+            () -> testInfo(5, 161541),
             () -> testPostAndGetFile("./test/files/file4.png", "file44.png"),
             () -> testPostAndGetFile("./test/files/file5.jpg", "file55.jpg"),
             this::testNotFound,
             this::reloadServer,
-            () -> testInfo(5, 161542),
+            () -> testInfo(5, 161541),
             () -> testPayloadTooLarge("./test/files/file6.jpg", "file.jpg"),
-            () -> testInfo(5, 161542),
+            () -> testInfo(5, 161541),
     };
 
     private void checkStatusCode(String method, String endpoint, int actual, int expected) {
