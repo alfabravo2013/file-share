@@ -18,7 +18,7 @@ files:
     visible: true
   - name: src/resources/application.properties
     visible: true
-  - name: test/files/hello
-    visible: false
   - name: src/fileshare/web/InfoResponse.java
     visible: true
+  - name: test/files/file3.txt
+    visible: false

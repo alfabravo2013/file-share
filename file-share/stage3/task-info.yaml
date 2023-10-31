@@ -10,8 +10,6 @@ files:
     visible: true
   - name: src/fileshare/web/InfoResponse.java
     visible: true
-  - name: test/files/hello
-    visible: false
   - name: test/files/file2.jpg
     visible: false
   - name: test/files/file 1.jpg
@@ -30,3 +28,5 @@ files:
     visible: true
   - name: src/fileshare/service/FileContainer.java
     visible: true
+  - name: test/files/file3.txt
+    visible: false

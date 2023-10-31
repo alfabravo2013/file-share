@@ -1,6 +1,5 @@
 import org.hyperskill.hstest.dynamic.DynamicTest;
 import org.hyperskill.hstest.dynamic.input.DynamicTesting;
-import org.hyperskill.hstest.exception.outcomes.UnexpectedError;
 import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.stage.SpringTest;
 import org.hyperskill.hstest.testcase.CheckResult;
@@ -127,11 +126,11 @@ public class FileShareTest extends SpringTest {
             this::emptyStorageAndCheckInfo,
             () -> testPostAndGetFile("./test/files/file 1.jpg", "file 1.jpg"),
             () -> testPostAndGetFile("./test/files/file2.jpg", "file 1.jpg"),
-            () -> testPostAndGetFile("./test/files/hello", "file2.exe"),
+            () -> testPostAndGetFile("./test/files/file3.txt", "file3.txt"),
             this::testNotFound,
-            () -> testInfo(2, 47086),
+            () -> testInfo(2, 32993),
             this::reloadServer,
-            () -> testInfo(2, 47086),
+            () -> testInfo(2, 32993),
             this::emptyStorageAndCheckInfo,
     };
 
@@ -167,11 +166,11 @@ public class FileShareTest extends SpringTest {
                         try {
                             Files.delete(path);
                         } catch (IOException e) {
-                            throw new UnexpectedError(e.getMessage());
+                            throw new WrongAnswer("Error clearing the file storage folder: " + e.getMessage());
                         }
                     });
         } catch (Exception ex) {
-            throw new UnexpectedError(ex.getMessage());
+            throw new WrongAnswer("Error clearing the file storage folder: " + ex.getMessage());
         }
     }
 
@@ -179,7 +178,7 @@ public class FileShareTest extends SpringTest {
         try {
             reloadSpring();
         } catch (Exception ex) {
-            throw new UnexpectedError(ex.getMessage());
+            return CheckResult.wrong("Error reloading the application: " + ex.getMessage());
         }
         return CheckResult.correct();
     }
